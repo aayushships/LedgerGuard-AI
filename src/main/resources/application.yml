@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/ledger
+    username: ledger
+    password: ledger
+  flyway:
+    enabled: true
+
+paypal:
+  # Get these from developer.paypal.com -> Apps & Credentials (Sandbox)
+  client-id: ${PAYPAL_CLIENT_ID:changeme}
+  client-secret: ${PAYPAL_CLIENT_SECRET:changeme}
+  webhook-id: ${PAYPAL_WEBHOOK_ID:changeme}
+  base-url: https://api-m.sandbox.paypal.com

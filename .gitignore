@@ -1,17 +1,10 @@
-# Maven build files
-target/
+# Ignore local configuration containing real credentials
+config/application.yml
 
-# Environment variables and secrets
+# Environment secrets
 .env
 .env.*
 !.env.example
 
-# Application configuration containing credentials
-**/application.yml
-
-# IDE files
-.idea/
-.vscode/
-
-# Logs
-*.log
+# Maven build output
+target/
