@@ -1,0 +1,17 @@
+# Maven build files
+target/
+
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Application configuration containing credentials
+**/application.yml
+
+# IDE files
+.idea/
+.vscode/
+
+# Logs
+*.log
