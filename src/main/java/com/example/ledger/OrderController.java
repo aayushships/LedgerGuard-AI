@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestClientResponseException;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;  
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -25,7 +29,23 @@ import java.util.UUID;
 @RestController
 public class OrderController {
 
-    public record CreateOrderRequest(String amount, String currency) {}
+   public record CreateOrderRequest(
+
+        @NotBlank(message = "Amount is required")
+        @Pattern(
+            regexp = "^(?=.*[1-9])\\d+(\\.\\d{1,2})?$",
+            message = "Amount must be positive and have at most 2 decimal places"
+        )
+        String amount,
+
+        @NotBlank(message = "Currency is required")
+        @Pattern(
+            regexp = "^[A-Z]{3}$",
+            message = "Currency must be a 3-letter uppercase code"
+        )
+        String currency
+
+    ) {}
 
     private final PayPalClient paypal;
 
@@ -34,11 +54,12 @@ public class OrderController {
     }
 
     @PostMapping("/api/orders")
-    public Map<String, String> create(@RequestBody CreateOrderRequest req,
-                                      @RequestHeader(value = "Idempotency-Key", required = false) String key) {
+    public Map<String, String> create(
+        @Valid @RequestBody CreateOrderRequest req,
+        @RequestHeader(value = "Idempotency-Key", required = false) String key) {
         // Same Idempotency-Key sent twice = same PayPal order, never two.
         String requestId = key != null ? key : UUID.randomUUID().toString();
-        String currency = req.currency() != null ? req.currency() : "USD";
+        String currency = req.currency();
         PayPalClient.OrderCreated o = paypal.createOrder(req.amount(), currency, requestId);
         Map<String, String> out = new LinkedHashMap<>();
         out.put("orderId", o.orderId());

@@ -1,6 +1,10 @@
-target/
+# Local secrets only
+config/application.yml
+
+# Environment secrets
 .env
 .env.*
 !.env.example
 
-**/application.yml
+# Build output
+target/
