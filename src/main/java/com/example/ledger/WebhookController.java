@@ -24,15 +24,19 @@ public class WebhookController {
     private final LedgerService ledger;
     private final PayPalClient paypal;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final PaymentAttemptRepository paymentAttemptRepository;
 
     public WebhookController(
-            JdbcTemplate jdbc,
-            LedgerService ledger,
-            PayPalClient paypal) {
-        this.jdbc = jdbc;
-        this.ledger = ledger;
-        this.paypal = paypal;
-    }
+        JdbcTemplate jdbc,
+        LedgerService ledger,
+        PayPalClient paypal,
+        PaymentAttemptRepository paymentAttemptRepository) {
+
+    this.jdbc = jdbc;
+    this.ledger = ledger;
+    this.paypal = paypal;
+    this.paymentAttemptRepository = paymentAttemptRepository;
+}
 
     @PostMapping("/webhooks/paypal")
     @Transactional
@@ -104,6 +108,9 @@ public class WebhookController {
                                         "SALES_REVENUE", 'C', minor, currency)
                         )
                 );
+
+                // Mark the matching payment attempt as completed.
+                paymentAttemptRepository.markCompletedByCaptureId(captureId);
             }
 
             case "PAYMENT.CAPTURE.REFUNDED" -> {

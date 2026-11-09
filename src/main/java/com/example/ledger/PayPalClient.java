@@ -154,4 +154,17 @@ public JsonNode refundCapture(
                 .retrieve().body(JsonNode.class);
         return "SUCCESS".equals(res.path("verification_status").asText());
     }
+
+    /**
+ * Retrieves the current status of an existing PayPal order.
+ * Useful for recovering after an uncertain capture response.
+ */
+public JsonNode getOrderDetails(String orderId) {
+
+    return http.get()
+            .uri("/v2/checkout/orders/{id}", orderId)
+            .headers(h -> h.setBearerAuth(token()))
+            .retrieve()
+            .body(JsonNode.class);
+}
 }
